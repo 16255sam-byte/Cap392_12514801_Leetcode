@@ -1,7 +1,9 @@
+import java.util.concurrent.CountDownLatch;
+
 class Foo {
 
-    boolean firstDone = false;
-    boolean secondDone = false;
+    CountDownLatch first = new CountDownLatch(1);
+    CountDownLatch second = new CountDownLatch(1);
 
     public Foo() {
 
@@ -10,22 +12,20 @@ class Foo {
     public void first(Runnable printFirst) throws InterruptedException {
 
         printFirst.run();
-        firstDone = true;
+        first.countDown();
     }
 
     public void second(Runnable printSecond) throws InterruptedException {
 
-        while (!firstDone) {
-        }
+        first.await();
 
         printSecond.run();
-        secondDone = true;
+        second.countDown();
     }
 
     public void third(Runnable printThird) throws InterruptedException {
 
-        while (!secondDone) {
-        }
+        second.await();
 
         printThird.run();
     }
